@@ -4,6 +4,7 @@ import com.example.concurrency.v1.model.Asset;
 import com.example.concurrency.v1.model.Credit;
 import com.example.concurrency.v1.model.Liability;
 import com.example.concurrency.v1.model.Person;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -76,6 +77,22 @@ public class E05_CreditCalculatorService {
 //                        (person, assets) -> calculateCredits(assets, getLiabilities(person))) // ④
 //                .get(); // ⑤
 //    }
+
+    public Mono<Credit> calculateCrediReactive(Long personId) {
+        Mono<Object> importantWorkMono = Mono.fromRunnable(() -> importantWork());
+        Mono<Person> personMono = Mono.fromSupplier(() -> getPerson(personId));
+        Mono<List<Asset>> assetMono = personMono.map(person -> getAssets(person));
+        Mono<List<Liability>> liabilitiesMono = personMono.map(person -> getLiabilities(person));
+
+        return importantWorkMono.then(
+                Mono.zip(assetMono, liabilitiesMono)
+                        .map(tuple -> {
+                            List<Asset> assets = tuple.getT1();
+                            List<Liability> liabilities = tuple.getT2();
+                            return calculateCredits(assets, liabilities);
+                        })
+        )
+    }
 
 
     public Credit calculateCreditWithCompletableFuture(Long personId)
