@@ -44,3 +44,11 @@ Executor의 한계
 - ExecutorService는 명령형 형태의 코드 스타일이다.
 - 함수형이나 선언형 스타일의 깔끔한 코드를 작성하기가 어렵다.
 
+포크/조인 풀, Work-Stealing 알고리즘
+
+ExecutorService(2004, Java5) -> CompletableFuture (2014, java8)
+- 비동기 작업을 연결하고 결과를 조합하기 쉽게 만들기 위해 등장
+
+CompletableFuture 한계
+1. get() 에서 발생하는 블로킹
+2. 디버깅의 어려움
